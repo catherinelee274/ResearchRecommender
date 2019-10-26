@@ -1,0 +1,10 @@
+<!doctype html>
+<title>Related papers to your uploaded file</title>
+<ul style="list-style-type: none;"></ul>
+{% if tags %}
+    {% for tag in tags %}
+        <ul> {{tag}} </ul> <button type="button">Add to Reading List</button> 
+    {% endfor %}
+{% else %}
+  <h1>Waiting for results...</h1>
+{% endif %}
