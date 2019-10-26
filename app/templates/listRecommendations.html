@@ -1,5 +1,7 @@
 <!doctype html>
 <title>Related papers to your uploaded file</title>
+
+<h1>We found that these papers might interest you :)</h1>
 <ul style="list-style-type: none;"></ul>
 {% if tags %}
     {% for tag in tags %}
@@ -7,4 +9,12 @@
     {% endfor %}
 {% else %}
   <h1>Waiting for results...</h1>
+{% endif %}
+
+
+{% if websearches %}
+    <h1>Additional Resources</h1> 
+    {% for url, title in websearches.items() %}
+        <ul> <a href={{url}}>{{title}}</a></ul> 
+    {% endfor %}
 {% endif %}
