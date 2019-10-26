@@ -5,6 +5,7 @@ azure-cognitiveservices-language-textanalytics
 arxivscraper
 pandas
 azure-cognitiveservices-personalizer
+azure-cognitiveservices-search-websearch
 # futures==3.0.5
 # itsdangerous==0.24
 # Jinja2==2.8
