@@ -20,6 +20,9 @@ from azure.cognitiveservices.search.autosuggest.models import (
     SearchAction,
     ErrorResponseException
 )
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel 
 from msrest.authentication import CognitiveServicesCredentials
 
 app = Flask(__name__, template_folder='app/templates', static_folder='app/static')
@@ -54,21 +57,13 @@ def getPapers():
 
 @app.route('/saveToReadingList', methods=['POST'])
 def addPapers():
-    #choice = request.args
-    #print(request.form)
-    #print(request.queryString)
     f = request.form
     for key in f.keys():
         for value in f.getlist(key):
             print(key,":",value)
             i = json.loads(key)
             readingList.append(i['value'])
-            #readingList.append(i['value'])
-    #str = {"value":"Example"}
-    #print(str['value'])
-    #readingList.append(choice)
     return 'OK'
-
 
 @app.route('/', methods=['GET', 'PUT', 'POST'])
 def paperRecommend():
@@ -90,15 +85,19 @@ def paperRecommend():
         except Exception:
             print('Exception=' + Exception)
             pass
-        ref =  'https://'+ ACCOUNT_NAME + '.blob.core.windows.net/' + container_name + '/' + filename
+        raw = parser.from_file(tempLocation)
+        raw = raw['content']
+        recs = recommendationModel(raw)
+        #ref =  'https://'+ ACCOUNT_NAME + '.blob.core.windows.net/' + container_name + '/' + filename
+        
         arr =  tags
         realTag = getAutosuggestions(tags[0])
         websearches = getBing(realTag)
         #call searchFor(tags)
         #df = pandas.read_csv('tags.csv')
         # convert df to dict and see if the tags from uploaded file exist in tags
-        title = 'Example Research Paper'
-        return render_template('listRecommendations.html',tags=tags,websearches=websearches,title=title)
+        title='Example'
+        return render_template('listRecommendations.html',tags=tags,websearches=websearches,recommendations=recs)
     return render_template('upload.html')
 
 def id_generator(size=32, chars=string.ascii_uppercase + string.digits):
@@ -167,9 +166,32 @@ def getAutosuggestions(firstTag):
             print("suggestion:", suggestion.query)
             return suggestion.query
 
-def help():
-    #cleaning , remove stop wards
-    # experiment
-    #proposed
+def recommendationModel(allText):
+    #return  a dict of title to score of recommendations (10)
+    recommendations = []
+    num = 10
+    df = pd.read_csv('path2.csv')
+    df.drop(columns=['id'],inplace=True)
+    df.rename(columns={'Unnamed: 0':'id'}, inplace=True)
+    dicts = [{'id': len(df), 'title':' ','categories': 'cs.lg', 'abstract': allText, 'doi': '0', 
+          'created': '2019-09-06' , 'updated':'2019-09-06', 'authors': 'none'}]
+    df = df.append(dicts, ignore_index=True, sort=False)
+    #print(df.loc[df['id'] == 11]['title'])
+    #print(df['title'][1].split(" "))
+    
+    tf = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), min_df=0, stop_words='english')
+    tfidf_matrix = tf.fit_transform(df['abstract'])
+    cosine_similarities = linear_kernel(tfidf_matrix, tfidf_matrix) 
 
-    return ''
+    results = {}
+    for idx, row in df.iterrows():
+        similar_indices = cosine_similarities[idx].argsort()[:-100:-1] 
+        similar_items = [(cosine_similarities[idx][i], df['id'][i]) for i in similar_indices] 
+        results[row['id']] = similar_items[1:]
+    id = len(df)-1
+    recs = results[id][:num]
+    for rec in recs: 
+        print('score', rec[0]) #score
+        print('title', df.loc[df['id'] == rec[1]]['title'].values )
+        recommendations.append([str(df.loc[df['id'] == rec[1]]['title'].values)[2:-2], rec[0]*1000]) 
+    return recommendations
