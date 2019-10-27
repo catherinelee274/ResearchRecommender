@@ -13,6 +13,27 @@
       padding: 0 10px;
       display: block;
         }
+
+        .loader {
+          border: 16px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 16px solid #3498db;
+          width: 120px;
+          height: 120px;
+          -webkit-animation: spin 2s linear infinite; /* Safari */
+          animation: spin 2s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
     </style>
   <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
@@ -24,36 +45,40 @@
 <h1>We thought these papers might interest you :)</h1>
 <ul style="list-style-type: none;"></ul>
 
-{% if recommendations %}
-  {% for pair in recommendations %}
+{% if combinedRecTag %}
+  {% for triple in combinedRecTag %}
       <div class="card mb-3">
           <img class="card-img-top">
           <div class="card-body">
-            <h5 class="card-title">{{pair.0}}</h5>
-            {% if tags %}
-            {% for tag in tags %}
+            <h5 class="card-title">{{triple.0.0}}</h5>
+            {% for tag in triple.1 %}
             <span class="badge badge-pill badge-success">{{tag}}</span> 
             {% endfor %}
-            {% endif %}
 
-            <p> Relevancy Score: {{pair.1}}</p>
-            <button type="submit" id="readingButton" name="readingListButton" value={{pair.0}} class="btn btn-primary btn-sm">Add to reading list</button>
+            <p> Relevancy Score: {{triple.0.1}}</p>
+            <button type="submit" id="readingButton" name="readingListButton" value={{triple.0.0}} class="btn btn-primary btn-sm">Add to reading list</button>
 
           </div>
     </div>
   {% endfor %}
 {% endif %}
+
+
+<!-- <div class="loader"></div> -->
         
 
   <script>
+  document.getElementById("loader").style.display = "block";
+    
     $(document).ready(function() { 
       let btn = $("#readingButton")
       btn.click(function(){
+        document.getElementById("loader").style.display = "none";
         $.ajax({
           method:"POST",
           url: "/saveToReadingList",
           data: JSON.stringify({value: btn.val()}),
-          success: function(response, callback){ console.log(response)}
+          success: function(response, callback){ document.getElementById("loader").style.display = "block";}
         })
       });
     });
@@ -66,4 +91,6 @@
     {% endfor %}
 {% endif %}
 <!-- <img src="../static/logo.png"> -->
+
+
 </body>
