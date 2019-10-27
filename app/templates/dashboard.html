@@ -25,7 +25,10 @@
 
     {% if readingList %}
       {% for title in readingList %}
-        <p>{{title}}</p>
+      <label class="container">
+          <input type="checkbox">  {{title}}
+          <span class="checkmark"></span>
+        </label>
       {% endfor %}
     {% endif %}
 
