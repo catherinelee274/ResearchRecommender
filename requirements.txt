@@ -6,6 +6,7 @@ arxivscraper
 pandas
 azure-cognitiveservices-personalizer
 azure-cognitiveservices-search-websearch
+azure-cognitiveservices-search-autosuggest
 # futures==3.0.5
 # itsdangerous==0.24
 # Jinja2==2.8
