@@ -1,11 +1,12 @@
 # run.py
 
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, jsonify
 from flask import render_template
 from werkzeug import secure_filename
 from azure.storage.blob import BlockBlobService
 import string, random, requests
 import os
+import json
 from azure.cognitiveservices.language.textanalytics import TextAnalyticsClient
 from msrest.authentication import CognitiveServicesCredentials
 from tika import parser
@@ -53,8 +54,19 @@ def getPapers():
 
 @app.route('/saveToReadingList', methods=['POST'])
 def addPapers():
-    choice = request.get_json()['value']
-    readingList.append(choice)
+    #choice = request.args
+    #print(request.form)
+    #print(request.queryString)
+    f = request.form
+    for key in f.keys():
+        for value in f.getlist(key):
+            print(key,":",value)
+            i = json.loads(key)
+            readingList.append(i['value'])
+            #readingList.append(i['value'])
+    #str = {"value":"Example"}
+    #print(str['value'])
+    #readingList.append(choice)
     return 'OK'
 
 
