@@ -12,6 +12,14 @@ from tika import parser
 from azure.cognitiveservices.search.websearch import WebSearchAPI
 from azure.cognitiveservices.search.websearch.models import SafeSearch
 from msrest.authentication import CognitiveServicesCredentials
+from azure.cognitiveservices.search.autosuggest import AutoSuggestSearchAPI
+from azure.cognitiveservices.search.autosuggest.models import (
+    Suggestions,
+    SuggestionsSuggestionGroup,
+    SearchAction,
+    ErrorResponseException
+)
+from msrest.authentication import CognitiveServicesCredentials
 
 app = Flask(__name__, template_folder='app/templates', static_folder='app/static')
 ACCOUNT_NAME = 'arxivpapers'
@@ -28,7 +36,7 @@ block_blob_service = BlockBlobService(
 
 #TODO: OPTION TO ADD TO READING LIST --> FEEDS INTO PERSONALIZER API
 
-@app.route('/')
+@app.route('/general')
 def generalRecommend():
     #recommends based on what you've clicked/upload'
     #infinite scrolling
@@ -37,22 +45,23 @@ def generalRecommend():
     # We think you may like
     return 'Hello, World!'
 
-@app.route('/myPapers', methods=['GET'])
+readingList = []
+@app.route('/myPapers', methods=['GET', 'PUT'])
 def getPapers():
     generator = block_blob_service.list_blobs(container_name)
-    ul = "<ul>"
-    for blob in generator:
-        ul += "<li>" + blob.name + "</li"
-    ul+= "</ul>"
-    return '''
-        <!doctype html> 
-        <title> Your uploaded files </title>
-        ''' + ul
+    return render_template('dashboard.html', myFiles=generator, readingList=readingList)
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/saveToReadingList', methods=['POST'])
+def addPapers():
+    choice = request.get_json()['value']
+    readingList.append(choice)
+    return 'OK'
+
+
+@app.route('/', methods=['GET', 'PUT', 'POST'])
 def paperRecommend():
-
     if request.method == 'POST':
+        
         file = request.files['file']
         filename = file.filename
         #^if causes trouble, convert to secure_filename(file.filename)
@@ -71,13 +80,13 @@ def paperRecommend():
             pass
         ref =  'https://'+ ACCOUNT_NAME + '.blob.core.windows.net/' + container_name + '/' + filename
         arr =  tags
-        
-        websearches = getBing(tags[0])
+        realTag = getAutosuggestions(tags[0])
+        websearches = getBing(realTag)
         #call searchFor(tags)
         #df = pandas.read_csv('tags.csv')
         # convert df to dict and see if the tags from uploaded file exist in tags
-
-        return render_template('listRecommendations.html',tags=tags,websearches=websearches)
+        title = 'Example Research Paper'
+        return render_template('listRecommendations.html',tags=tags,websearches=websearches,title=title)
     return render_template('upload.html')
 
 def id_generator(size=32, chars=string.ascii_uppercase + string.digits):
@@ -101,7 +110,7 @@ def keyPhrases(fileLocation):
 
         length = len(document.key_phrases)
         i = 0
-        while i < 10 and i < length:
+        while i < 6 and i < length:
             print("phrase:", document.key_phrases[i])
             phrases.append(document.key_phrases[i])
             i+=1
@@ -133,3 +142,22 @@ def getBing(firstTag):
             i+=1
     
     return dict
+
+def getAutosuggestions(firstTag):
+    subkey= '09b282e0bff649be998cfb5485e528e5'
+    client = AutoSuggestSearchAPI(
+        CognitiveServicesCredentials(subkey))
+    suggestions = client.auto_suggest(
+            query=firstTag)  # type: Suggestions
+    if suggestions.suggestion_groups:
+        suggestion_group = suggestions.suggestion_groups[0]  # type: SuggestionsSuggestionGroup
+        for suggestion in suggestion_group.search_suggestions:  # type: SearchAction
+            print("suggestion:", suggestion.query)
+            return suggestion.query
+
+def help():
+    #cleaning , remove stop wards
+    # experiment
+    #proposed
+
+    return ''
