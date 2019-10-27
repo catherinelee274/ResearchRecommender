@@ -44,7 +44,12 @@
     $(document).ready(function() { 
       let btn = $("#readingButton")
       btn.click(function(){
-        $.post("/saveToReadingList", {'value': btn.val() })
+        $.ajax({
+          method:"POST",
+          url: "/saveToReadingList",
+          data: JSON.stringify({value: btn.val()}),
+          success: function(response, callback){ console.log(response)}
+        })
       });
     });
   </script>
