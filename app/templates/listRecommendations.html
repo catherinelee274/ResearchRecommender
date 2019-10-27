@@ -1,20 +1,59 @@
 <!doctype html>
 <title>Related papers to your uploaded file</title>
 
-<h1>We found that these papers might interest you :)</h1>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body {
+      margin: 40px auto;
+      max-width: 650px;
+      line-height: 1.6;
+      font-size: 18px;
+      color: #444;
+      padding: 0 10px;
+      display: block;
+        }
+    </style>
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+</head>
+    
+<body>
+    
+<h1>We thought these papers might interest you :)</h1>
 <ul style="list-style-type: none;"></ul>
-{% if tags %}
-    {% for tag in tags %}
-        <ul> {{tag}} <button type="button">Add to Reading List</button>  </ul> 
-    {% endfor %}
-{% else %}
-  <h1>Waiting for results...</h1>
-{% endif %}
 
+        <div class="card mb-3">
+                <img class="card-img-top">
+                <div class="card-body">
+                  <h5 class="card-title">{{title}}</h5>
+                  {% if tags %}
+                  {% for tag in tags %}
+                  <span class="badge badge-pill badge-success">{{tag}}</span> 
+                  {% endfor %}
+                  
+                  {% endif %}
+                  <p> Relevancy Score: {.99}</p>
+                    <button type="submit" id="readingButton" name="readingListButton" value={{title}} class="btn btn-primary btn-sm">Add to reading list</button>
+                </div>
+        </div>
+
+  <script>
+    $(document).ready(function() { 
+      let btn = $("#readingButton")
+      btn.click(function(){
+        $.post("/saveToReadingList", {'value': btn.val() })
+      });
+    });
+  </script>
 
 {% if websearches %}
-    <h1>Additional Resources</h1> 
+    <h1>Additional Resources and Links</h1> 
     {% for url, title in websearches.items() %}
         <ul> <a href={{url}}>{{title}}</a></ul> 
     {% endfor %}
 {% endif %}
+
+</body>

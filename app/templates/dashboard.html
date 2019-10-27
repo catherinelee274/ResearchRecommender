@@ -1,0 +1,34 @@
+ <!DOCTYPE html> 
+ <title> Your uploaded files </title>
+  <style>
+    html {
+    margin: 40px auto;
+    max-width: 650px;
+    line-height: 1.6;
+    font-size: 18px;
+    color: #444;
+    padding: 0 10px;
+    display: block;
+      }
+  </style>
+
+  <body>
+
+    <h1>Your uploaded files</h1>
+    {% if myFiles %}
+      {% for file in myFiles %}
+        <p>{{file.name}}</p>
+      {% endfor %}
+    {% endif %}
+
+    <h1>Your Reading List</h1>
+
+    {% if readingList %}
+      {% for title in readingList %}
+        <p>{{title}}</p>
+      {% endfor %}
+    {% endif %}
+
+  </body>
+
+  
