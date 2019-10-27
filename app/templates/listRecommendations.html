@@ -24,20 +24,26 @@
 <h1>We thought these papers might interest you :)</h1>
 <ul style="list-style-type: none;"></ul>
 
-        <div class="card mb-3">
-                <img class="card-img-top">
-                <div class="card-body">
-                  <h5 class="card-title">{{title}}</h5>
-                  {% if tags %}
-                  {% for tag in tags %}
-                  <span class="badge badge-pill badge-success">{{tag}}</span> 
-                  {% endfor %}
-                  
-                  {% endif %}
-                  <p> Relevancy Score: {.99}</p>
-                    <button type="submit" id="readingButton" name="readingListButton" value={{title}} class="btn btn-primary btn-sm">Add to reading list</button>
-                </div>
-        </div>
+{% if recommendations %}
+  {% for pair in recommendations %}
+      <div class="card mb-3">
+          <img class="card-img-top">
+          <div class="card-body">
+            <h5 class="card-title">{{pair.0}}</h5>
+            {% if tags %}
+            {% for tag in tags %}
+            <span class="badge badge-pill badge-success">{{tag}}</span> 
+            {% endfor %}
+            {% endif %}
+
+            <p> Relevancy Score: {{pair.1}}</p>
+            <button type="submit" id="readingButton" name="readingListButton" value={{pair.0}} class="btn btn-primary btn-sm">Add to reading list</button>
+
+          </div>
+    </div>
+  {% endfor %}
+{% endif %}
+        
 
   <script>
     $(document).ready(function() { 
