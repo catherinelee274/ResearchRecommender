@@ -67,18 +67,15 @@
 <!-- <div class="loader"></div> -->
         
 
-  <script>
-  document.getElementById("loader").style.display = "block";
-    
+  <script>    
     $(document).ready(function() { 
       let btn = $("#readingButton")
       btn.click(function(){
-        document.getElementById("loader").style.display = "none";
         $.ajax({
           method:"POST",
           url: "/saveToReadingList",
           data: JSON.stringify({value: btn.val()}),
-          success: function(response, callback){ document.getElementById("loader").style.display = "block";}
+          success: function(response, callback){}
         })
       });
     });
