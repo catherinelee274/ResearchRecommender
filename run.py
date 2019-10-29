@@ -75,35 +75,44 @@ def paperRecommend():
         # fileextension = filename.rsplit('.',1)[1]
         # Randomfilename = id_generator()
         # filename = Randomfilename + '.' + fileextension
-        try:
-            #first call parseAbstract
-            file.save("temp/" + filename)
-            tempLocation = "temp/" + filename 
-            block_blob_service.create_blob_from_stream(container_name, filename, file)
-            tags = keyPhrases(tempLocation)
-
-        except Exception:
-            print('Exception=' + Exception)
-            pass
+        file.save("temp/" + filename)
+        tempLocation = "temp/" + filename 
         raw = parser.from_file(tempLocation)
         raw = raw['content']
         recs = recommendationModel(raw)
         #ref =  'https://'+ ACCOUNT_NAME + '.blob.core.windows.net/' + container_name + '/' + filename
+
+        df = pd.read_csv('path2.csv')
+        df.drop(columns=['id'],inplace=True)
+        df.rename(columns={'Unnamed: 0':'id'}, inplace=True)
+
+        tagGroup = []
+        try:
+            #first call parseAbstract
+            
+            block_blob_service.create_blob_from_stream(container_name, filename, file)
+            tagGroup.append(keyPhrasesFromFile(tempLocation))
+        except Exception:
+            print('Exception=' + Exception)
+            pass
+
+        for text in recs:
+            tagGroup.append(keyPhrases(str(df.loc[df['id'] == text[2]]['abstract'].values)[2:-2]))
         
-        arr =  tags
-        realTag = getAutosuggestions(tags[0])
+        realTag = getAutosuggestions(tagGroup[0][0])
         websearches = getBing(realTag)
+        tagGroup.pop(0)
+        combined = zip(recs, tagGroup)
         #call searchFor(tags)
         #df = pandas.read_csv('tags.csv')
         # convert df to dict and see if the tags from uploaded file exist in tags
-        title='Example'
-        return render_template('listRecommendations.html',tags=tags,websearches=websearches,recommendations=recs)
+        return render_template('listRecommendations.html',combinedRecTag=combined,websearches=websearches), 201
     return render_template('upload.html')
 
 def id_generator(size=32, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
-def keyPhrases(fileLocation):
+def keyPhrasesFromFile(fileLocation):
     raw = parser.from_file(fileLocation)
     raw = raw['content']
     documents = [
@@ -119,6 +128,24 @@ def keyPhrases(fileLocation):
     #but for later compare more tags (like maybe 5)
     for document in response.documents:
 
+        length = len(document.key_phrases)
+        i = 0
+        while i < 6 and i < length:
+            print("phrase:", document.key_phrases[i])
+            phrases.append(document.key_phrases[i])
+            i+=1
+    return phrases
+
+def keyPhrases(text):
+    documents = [{
+        "id": "1",
+        "language": "en",
+        "text": text
+    }]
+    response = text_analytics.key_phrases(documents=documents)
+    phrases = []
+    #but for later compare more tags (like maybe 5)
+    for document in response.documents:
         length = len(document.key_phrases)
         i = 0
         while i < 6 and i < length:
@@ -179,10 +206,13 @@ def recommendationModel(allText):
     #print(df.loc[df['id'] == 11]['title'])
     #print(df['title'][1].split(" "))
     
+    print("tfidf")
     tf = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), min_df=0, stop_words='english')
     tfidf_matrix = tf.fit_transform(df['abstract'])
     cosine_similarities = linear_kernel(tfidf_matrix, tfidf_matrix) 
-
+    
+    
+    print("cosine similarities")
     results = {}
     for idx, row in df.iterrows():
         similar_indices = cosine_similarities[idx].argsort()[:-100:-1] 
@@ -193,5 +223,7 @@ def recommendationModel(allText):
     for rec in recs: 
         print('score', rec[0]) #score
         print('title', df.loc[df['id'] == rec[1]]['title'].values )
-        recommendations.append([str(df.loc[df['id'] == rec[1]]['title'].values)[2:-2], rec[0]*1000]) 
+
+        #returns arr of [title, score, i]
+        recommendations.append([str(df.loc[df['id'] == rec[1]]['title'].values)[2:-2], rec[0], rec[1]]) 
     return recommendations
