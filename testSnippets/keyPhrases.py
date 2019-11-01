@@ -3,13 +3,13 @@ import os
 from azure.cognitiveservices.language.textanalytics import TextAnalyticsClient
 from msrest.authentication import CognitiveServicesCredentials
 
-SUBSCRIPTION_KEY = '92a11f7c8c9140feb2a415b065d641cf'
+SUBSCRIPTION_KEY = ''
 
-ENDPOINT = 'https://drstone.cognitiveservices.azure.com/'
+ENDPOINT = ''
 
 
 credentials = CognitiveServicesCredentials(SUBSCRIPTION_KEY)
-text_analytics_url = 'https://westus.api.cognitive.microsoft.com'
+text_analytics_url = ''
 text_analytics = TextAnalyticsClient(endpoint=text_analytics_url, credentials=credentials)
 
 

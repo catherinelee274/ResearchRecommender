@@ -4,8 +4,8 @@ import os, uuid, sys
 from azure.storage.blob import BlockBlobService, PublicAccess
 
 
-ACCOUNT_NAME = 'arxivpapers'
-ACCOUNT_KEY = 'KWUJnGS5h5gZNBU6d86pox02EBGaP5vF5tkhBcIx7Q7zP/rABFPtFgFZL7TLV95g71e6ElaCOG+g+7kEPF+/hQ=='
+ACCOUNT_NAME = ''
+ACCOUNT_KEY = ''
 container_name ='papers'
 
 block_blob_service = BlockBlobService(

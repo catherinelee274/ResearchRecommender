@@ -11,10 +11,10 @@ from nltk.corpus import stopwords
 import pandas
 
 
-SUBSCRIPTION_KEY = '92a11f7c8c9140feb2a415b065d641cf'
-ENDPOINT = 'https://drstone.cognitiveservices.azure.com/'
+SUBSCRIPTION_KEY = ''
+ENDPOINT = ''
 credentials = CognitiveServicesCredentials(SUBSCRIPTION_KEY)
-text_analytics_url = 'https://westus.api.cognitive.microsoft.com'
+text_analytics_url = ''
 text_analytics = TextAnalyticsClient(endpoint=text_analytics_url, credentials=credentials)
 
 df = pandas.read_csv('path2.csv')
