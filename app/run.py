@@ -75,8 +75,8 @@ def paperRecommend():
         # fileextension = filename.rsplit('.',1)[1]
         # Randomfilename = id_generator()
         # filename = Randomfilename + '.' + fileextension
-        file.save("../EXAMPLE_PAPERS/" + filename)
-        tempLocation = "../EXAMPLE_PAPERS/" + filename 
+        file.save("tempResearchStorage/" + filename)
+        tempLocation = "tempResearchStorage/" + filename 
         raw = parser.from_file(tempLocation)
         raw = raw['content']
         recs = recommendationModel(raw)
