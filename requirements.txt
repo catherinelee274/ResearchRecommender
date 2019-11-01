@@ -1,5 +1,5 @@
 azure-storage-blob
-flask
+Flask
 tika
 azure-cognitiveservices-language-textanalytics
 arxivscraper
@@ -7,18 +7,35 @@ pandas
 azure-cognitiveservices-personalizer
 azure-cognitiveservices-search-websearch
 azure-cognitiveservices-search-autosuggest
+azure-cognitiveservices-nspkg
+azure-storage-common
+azure-nspkg
+azure-common
 sklearn
+certifi
+cffi
+chardet
+Click
+cryptography
 numpy
-# futures==3.0.5
-# itsdangerous==0.24
-# Jinja2==2.8
-# MarkupSafe==0.23
-# python-dateutil==2.5.3
-# requests>=2.20.0
-# six==1.10.0
-# Werkzeug==0.11.5
-# requests
-# pprint
-# os
-# arxivscraper
-# pandas
+idna
+nltk
+isodate
+itsdangerous
+Jinja2
+joblib
+oauthlib
+MarkupSafe
+msrest
+pycparser
+python-dateutil
+pytz
+requests
+requests-oauthlib
+scikit-learn
+scipy
+six
+sklearn
+tika
+urllib3
+Werkzeug
