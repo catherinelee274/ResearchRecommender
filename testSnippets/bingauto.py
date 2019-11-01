@@ -8,7 +8,7 @@ from azure.cognitiveservices.search.autosuggest.models import (
 )
 from msrest.authentication import CognitiveServicesCredentials
 
-subkey= '09b282e0bff649be998cfb5485e528e5'
+subkey= ''
 
 client = AutoSuggestSearchAPI(
         CognitiveServicesCredentials(subkey))

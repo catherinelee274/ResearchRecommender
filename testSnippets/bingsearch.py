@@ -5,7 +5,7 @@ from msrest.authentication import CognitiveServicesCredentials
 
 
 
-subkey = 'ac4be630084d4433855037234a2a3b80'
+subkey = ''
 firstTag = 'neural networks'
 #declare client
 client = WebSearchAPI(CognitiveServicesCredentials(subkey))
